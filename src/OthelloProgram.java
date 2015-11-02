@@ -7,34 +7,45 @@ public class OthelloProgram {
 	private JFrame myFrame;
 	private JPanel myPanel;
 	private JPanel myPanel2;
+	private JPanel myPanel3;
 	private JButton[][] myButtons;
-	private JLabel myLabel;
+	private JLabel currentPlayerLabel;
+	private JLabel canMoveLabel;
+	private JLabel totalPiecesLabel;
 	
 	static char[][] boardSize;
 	int numberOfChips = 4;
-	char playerTurn = 'B';
+	char playerTurn = '●';
 	private int xSpot = 0;
 	private int ySpot = 0;
-	int totalBlack = 0;
-	int totalWhite = 0;
 	
 	public OthelloProgram()
 	{
 		myFrame = new JFrame("Othello");	//Makes a new window called "Othello"
+		myFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		myPanel = new JPanel();
 		myPanel2 = new JPanel();
-		myLabel = new JLabel("Current player: Black");	//Makes a new label that displays the current player's turn
+		myPanel3 = new JPanel();
+		currentPlayerLabel = new JLabel("Current player: Black");	//Makes a new label that displays the current player's turn
+		canMoveLabel = new JLabel("Welcome to Othello!", JLabel.CENTER);
+		totalPiecesLabel = new JLabel("Black Pieces: 0 White Pieces: 0");
 		myPanel.setLayout(new GridLayout(8, 8));	//Makes an 8 x 8 grid panel
-		myPanel2.setLayout(new GridLayout(0, 1));	//Makes a 0 x 1 grid panel for the label
+		myPanel2.setLayout(new GridLayout(0, 2));	//Makes a 0 x 1 grid panel for the label
+		myPanel3.setLayout(new GridLayout(0, 1));
+		UIManager.put("Button.disabledText", Color.BLACK);
 		myButtons = new JButton[8][8];	//Makes 64 buttons placed in an 8 x 8 grid
 		myFrame.pack();
 		boardSize = new char[8][8];		//Sets up an 8 x 8 board
 		setupBoard();
-		myPanel2.add(myLabel);	//Adds the label to the second panel
+		myPanel2.add(currentPlayerLabel);	//Adds the label to the second panel;
+		myPanel2.add(totalPiecesLabel, BorderLayout.EAST);
+		myPanel3.add(canMoveLabel);
 		myFrame.add(myPanel2, BorderLayout.NORTH);	//Adds the second panel to the very top of the window
+		myFrame.add(myPanel3, BorderLayout.SOUTH);
 		myFrame.add(myPanel, BorderLayout.CENTER);	//Adds the 8 x 8 grid to the center of the window
 		myFrame.pack();		//Packs all components of the window
 		myFrame.setVisible(true);	//Makes the window visible
+		
 	}
 	
 	public class MyActionListener implements ActionListener		//The Action Listener that tells what each button will do
@@ -56,10 +67,13 @@ public class OthelloProgram {
 			for (int x = 0; x < 8; x++)
 			{
 				myButtons[x][y] = new JButton();	//Creates individual buttons
+				myButtons[x][y].setEnabled(true);
 				myButtons[x][y].putClientProperty("x", x + "");		//Stores x value of button
 				myButtons[x][y].putClientProperty("y", y + "");		//Stores y value of button
-				myButtons[x][y].setPreferredSize(new Dimension(40, 40));	//Sets the size of the buttons
+				myButtons[x][y].setPreferredSize(new Dimension(48, 48));	//Sets the size of the buttons
 				myButtons[x][y].setMargin(new Insets(0, 0, 0, 0));
+				myButtons[x][y].setBackground(new Color(0, 190, 0));
+				myButtons[x][y].setBorder(BorderFactory.createLineBorder(Color.BLACK));
 				myButtons[x][y].addActionListener(new MyActionListener());	//Gives the buttons an action when pressed
 				myPanel.add(myButtons[x][y]);
 			}
@@ -74,68 +88,65 @@ public class OthelloProgram {
 			}
 		}
 		
-		
 		//Puts the first 4 pieces in the middle of the board
+		boardSize[3][3] = '○';
+		myButtons[3][3].setText("○");
+		boardSize[4][4] = '○';
+		myButtons[4][4].setText("○");
+		boardSize[3][4] = '●';
+		myButtons[3][4].setText("●");
+		boardSize[4][3] = '●';
+		myButtons[4][3].setText("●");
 		myButtons[3][3].setEnabled(false);
-		myButtons[3][3].setText("W");
 		myButtons[3][4].setEnabled(false);
-		myButtons[3][4].setText("B");
 		myButtons[4][3].setEnabled(false);
-		myButtons[4][3].setText("B");
 		myButtons[4][4].setEnabled(false);
-		myButtons[4][4].setText("W");
-		
-		//Assigns the first 4 pieces of the board a value
-		boardSize[3][3] = 'W';
-		boardSize[3][4] = 'B';
-		boardSize[4][3] = 'B';
-		boardSize[4][4] = 'W';
 		
 		/*
 		//Used to check all conversion functions
 		//boardSize[4][3] = '1'; Place value here to trigger all conversion functions
 		//Right conversion
-		boardSize[5][3] = 'W';
-		boardSize[6][3] = 'W';
-		boardSize[7][3] = 'B';
+		boardSize[5][3] = '○';
+		boardSize[6][3] = '○';
+		boardSize[7][3] = '●';
 		
 		//Left conversion
-		boardSize[3][3] = 'W';
-		boardSize[2][3] = 'W';
-		boardSize[1][3] = 'W';
-		boardSize[0][3] = 'B';
+		boardSize[3][3] = '○';
+		boardSize[2][3] = '○';
+		boardSize[1][3] = '○';
+		boardSize[0][3] = '●';
 		
 		//Up conversion
-		boardSize[4][2] = 'W';
-		boardSize[4][1] = 'W';
-		boardSize[4][0] = 'B';
+		boardSize[4][2] = '○';
+		boardSize[4][1] = '○';
+		boardSize[4][0] = '●';
 		
 		//Down conversion
-		boardSize[4][4] = 'W';
-		boardSize[4][5] = 'W';
-		boardSize[4][6] = 'W';
-		boardSize[4][7] = 'B';
+		boardSize[4][4] = '○';
+		boardSize[4][5] = '○';
+		boardSize[4][6] = '○';
+		boardSize[4][7] = '●';
 		
 		//Diagonal Up Right conversion
-		boardSize[5][2] = 'W';
-		boardSize[6][1] = 'W';
-		boardSize[7][0] = 'B';
+		boardSize[5][2] = '○';
+		boardSize[6][1] = '○';
+		boardSize[7][0] = '●';
 		
 		//Diagonal Down Right conversion
-		boardSize[5][4] = 'W';
-		boardSize[6][5] = 'W';
-		boardSize[7][6] = 'B';
+		boardSize[5][4] = '○';
+		boardSize[6][5] = '○';
+		boardSize[7][6] = '●';
 		
 		//Diagonal Left Up conversion
-		boardSize[3][2] = 'W';
-		boardSize[2][1] = 'W';
-		boardSize[1][0] = 'B';
+		boardSize[3][2] = '○';
+		boardSize[2][1] = '○';
+		boardSize[1][0] = '●';
 		
 		//Diagonal Left Down conversion
-		boardSize[3][4] = 'W';
-		boardSize[2][5] = 'W';
-		boardSize[1][6] = 'W';
-		boardSize[0][7] = 'B';
+		boardSize[3][4] = '○';
+		boardSize[2][5] = '○';
+		boardSize[1][6] = '○';
+		boardSize[0][7] = '●';
 		*/
 	}
 	
@@ -445,7 +456,7 @@ public class OthelloProgram {
 		if (x + 1 < 8 && boardSize[x + 1][y] != playerTurn)		//First checks if the chip to the right is one of the current player's chips
 		{
 			x++;	//Skips to the right of the chosen area, otherwise the validation will fail since the chosen spot is a *
-			while (x < 8 && (boardSize[x][y] == 'W' || boardSize[x][y] == 'B'))		//Checks to make sure that the check remains inside the array and is either a white piece or black piece
+			while (x < 8 && (boardSize[x][y] == '○' || boardSize[x][y] == '●'))		//Checks to make sure that the check remains inside the array and is either a white piece or black piece
 			{
 				if (boardSize[x][y] == playerTurn)
 					return true;
@@ -458,7 +469,7 @@ public class OthelloProgram {
 		if (x - 1 >= 0 && boardSize[x - 1][y] != playerTurn)		//First checks if the chip to the left is one of the current player's chips
 		{
 			x--;	//Skips to the left of the chosen area
-			while (x >= 0 && (boardSize[x][y] == 'W' || boardSize[x][y] == 'B'))	//Refer to comment on line 346
+			while (x >= 0 && (boardSize[x][y] == '○' || boardSize[x][y] == '●'))	//Refer to comment on line 346
 			{
 				if (boardSize[x][y] == playerTurn)
 					return true;
@@ -471,7 +482,7 @@ public class OthelloProgram {
 		if (y + 1 < 8 && boardSize[x][y + 1] != playerTurn)		//First checks if the chip below is one of the current player's chips
 		{
 			y++;	//Skips to the location under the chosen area
-			while (y < 8 && (boardSize[x][y] == 'W' || boardSize[x][y] == 'B'))		//Refer to comment on line 346
+			while (y < 8 && (boardSize[x][y] == '○' || boardSize[x][y] == '●'))		//Refer to comment on line 346
 			{
 				if (boardSize[x][y] == playerTurn)
 					return true;
@@ -484,7 +495,7 @@ public class OthelloProgram {
 		if (y - 1 >= 0 && boardSize[x][y - 1] != playerTurn)		//First checks if the chip above is one of the current player's chips
 		{
 			y--;	//Skips to the location above the chosen area
-			while (y >= 0 && (boardSize[x][y] == 'W' || boardSize[x][y] == 'B'))	//Refer to comment on line 346
+			while (y >= 0 && (boardSize[x][y] == '○' || boardSize[x][y] == '●'))	//Refer to comment on line 346
 			{
 				if (boardSize[x][y] == playerTurn)
 					return true;
@@ -499,7 +510,7 @@ public class OthelloProgram {
 			//Skips to the location to the upper right of the chosen area
 			x++;	
 			y--;	
-			while ((x < 8 && y >= 0) && (boardSize[x][y] == 'W' || boardSize[x][y] == 'B'))		//Refer to comment on line 346
+			while ((x < 8 && y >= 0) && (boardSize[x][y] == '○' || boardSize[x][y] == '●'))		//Refer to comment on line 346
 			{
 				if (boardSize[x][y] == playerTurn)
 					return true;
@@ -516,7 +527,7 @@ public class OthelloProgram {
 			//Skips to the location to the lower right of the chosen area
 			x++;
 			y++;
-			while ((x < 8 && y < 8) && (boardSize[x][y] == 'W' || boardSize[x][y] == 'B'))		//Refer to comment on line 346
+			while ((x < 8 && y < 8) && (boardSize[x][y] == '○' || boardSize[x][y] == '●'))		//Refer to comment on line 346
 			{
 				if (boardSize[x][y] == playerTurn)
 					return true;
@@ -533,7 +544,7 @@ public class OthelloProgram {
 			//Skips to the location to the upper left of the chosen area
 			x--;
 			y--;
-			while ((x >= 0 && y >= 0) && (boardSize[x][y] == 'W' || boardSize[x][y] == 'B'))	//Refer to comment on line 346
+			while ((x >= 0 && y >= 0) && (boardSize[x][y] == '○' || boardSize[x][y] == '●'))	//Refer to comment on line 346
 			{
 				if (boardSize[x][y] == playerTurn)
 					return true;
@@ -550,7 +561,7 @@ public class OthelloProgram {
 			//Skips to the location to the lower left of the chosen area
 			x--;
 			y++;
-			while ((x >= 0 && y < 8) && (boardSize[x][y] == 'W' || boardSize[x][y] == 'B'))		//Refer to comment on line 346
+			while ((x >= 0 && y < 8) && (boardSize[x][y] == '○' || boardSize[x][y] == '●'))		//Refer to comment on line 346
 			{
 				if (boardSize[x][y] == playerTurn)
 					return true;
@@ -567,12 +578,19 @@ public class OthelloProgram {
 	public void playerMove(int mx, int my)
 	{	
 		boolean cont = validMove(mx, my);		//Makes sure whether the chosen position to place the current player's piece is a valid move
-
+		int totalBlack = 0;
+		int totalWhite = 0;
+		
 		if (cont == true && checkPlayerCanMove() == true)		//If it is a valid move, make player moves
 		{
+			canMoveLabel.setText(" ");
 			if (boardSize[mx][my] == '*')		//Checks if the space is an empty space
 			{
 				boardSize[mx][my] = playerTurn;		//Assigns the current space as the current player's piece
+				if (playerTurn == '●')
+					UIManager.put("Button.disabledText", Color.BLACK);
+				else
+					UIManager.put("Button.disabledText", Color.WHITE);
 				conversion(mx, my);		//Does necessary conversions
 			}
 			/*
@@ -588,47 +606,51 @@ public class OthelloProgram {
 			numberOfChips++;	//Increases the number of chips on the board
 		
 			//Change the current player's turn
-			if (playerTurn == 'B')
+			if (playerTurn == '●')
 			{
-				playerTurn = 'W';
-				myLabel.setText("Current player: White");
+				playerTurn = '○';
+				currentPlayerLabel.setBackground(Color.WHITE);
+				currentPlayerLabel.setText("Current player: White");
 			}
 			else
 			{
-				playerTurn = 'B';
-				myLabel.setText("Current player: Black");
+				playerTurn = '●';
+				currentPlayerLabel.setBackground(Color.BLACK);
+				currentPlayerLabel.setText("Current player: Black");
 			}
+			
+			//Count the different colored pieces
+			for (int y = 0; y < 8; y++)
+			{
+				for (int x = 0; x < 8; x++)
+				{
+					if (boardSize[x][y] == '●')
+						totalBlack++;
+					else if (boardSize[x][y] == '○')
+						totalWhite++;
+				}
+			}
+
+			totalPiecesLabel.setText("Black Pieces: " + totalBlack + " White Pieces: " + totalWhite);
 			
 			//Checks if all the spaces in the board are filled up 
 			if (numberOfChips >= 64)
 			{
-				//Count the different colored pieces
-				for (int y = 0; y < 8; y++)
-				{
-					for (int x = 0; x < 8; x++)
-					{
-						if (boardSize[x][y] == 'B')
-							totalBlack++;
-						else if (boardSize[x][y] == 'W')
-							totalWhite++;
-					}
-				}
-				
 				//Check who wins
 				if (totalBlack > totalWhite)
 				{
 					JOptionPane.showMessageDialog(new JFrame(), "Black wins!");
-					myLabel.setText("Winner: Black");
+					currentPlayerLabel.setText("Winner: Black");
 				}
 				else if (totalWhite > totalBlack)
 				{
 					JOptionPane.showMessageDialog(new JFrame(), "White wins!");
-					myLabel.setText("Winner: White");
+					currentPlayerLabel.setText("Winner: White");
 				}
 				else
 				{
 					JOptionPane.showMessageDialog(new JFrame(), "Its a Tie!");
-					myLabel.setText("Its a Tie!");
+					currentPlayerLabel.setText("Its a Tie!");
 				}
 			}
 		}
@@ -637,21 +659,19 @@ public class OthelloProgram {
 			//Checks first to see if the player can move
 			if (checkPlayerCanMove() == false)
 			{
-				if (playerTurn == 'B')
+				if (playerTurn == '●')
 				{
-					JOptionPane.showMessageDialog(new JFrame(), "Black can't move!");
-					myLabel.setText("Black couldn't move!");
-					playerTurn = 'W';
+					canMoveLabel.setText("Black couldn't move!");
+					playerTurn = '○';
 				}
 				else 
 				{
-					JOptionPane.showMessageDialog(new JFrame(), "White can't move!");
-					myLabel.setText("White couldn't move!");
-					playerTurn = 'B';
+					canMoveLabel.setText("White couldn't move!");
+					playerTurn = '●';
 				}
 			}
 			else	//If the player can move and made an invalid move, display this message instead
-				JOptionPane.showMessageDialog(new JFrame(), "Invalid move!");
+				canMoveLabel.setText("Invalid move!");
 		}
 	}
 	
@@ -705,21 +725,21 @@ public class OthelloProgram {
 			
 			if (game.checkPlayerCanMove() == false)
 			{	
-				if (game.playerTurn == 'B')
+				if (game.playerTurn == '●')
 				{
 					System.out.println("Black cannot move!");
-					game.playerTurn = 'W';
+					game.playerTurn = '○';
 				}
 				else
 				{
 					System.out.println("White cannot move!");
-					game.playerTurn = 'B';
+					game.playerTurn = '●';
 				}
 			}
 			else
 			{
 			
-			if (game.playerTurn == 'B')		//Displays who's turn it is
+			if (game.playerTurn == '●')		//Displays who's turn it is
 				System.out.println("Black's turn");
 			else
 				System.out.println("White's turn");
@@ -742,9 +762,9 @@ public class OthelloProgram {
 			{
 				for (int xVal = 0; xVal < 8; xVal++)
 				{
-					if (boardSize[xVal][yVal] == 'B')
+					if (boardSize[xVal][yVal] == '●')
 						totalBlackPieces++;
-					else if (boardSize[xVal][yVal] == 'W')
+					else if (boardSize[xVal][yVal] == '○')
 						totalWhitePieces++;
 				}
 			}
